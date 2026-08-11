@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "agent-tool-server-offerup",
+  "name": "OfferUp Agent Tool Server",
+  "description": "A reserved registry entry for a repository that does not yet contain a server implementation.",
+  "lifecycle": "planned",
+  "repository": "https://github.com/ashergarland/agent-tool-server-offerup",
+  "license": "UNLICENSED",
+  "maintainer": "@ashergarland",
+  "categories": ["marketplaces"],
+  "tags": ["offerup", "planned"],
+  "interfaces": {
+    "transports": [],
+    "hosting": "unavailable",
+    "authentication": [],
+    "requiredConfiguration": []
+  },
+  "capabilities": {
+    "tools": []
+  },
+  "operations": {
+    "leastPrivilege": "not-documented",
+    "scopeAllowLists": "not-documented",
+    "mutationsDisabledByDefault": "not-documented",
+    "explicitMutationConfirmation": "not-documented",
+    "dryRun": "not-documented",
+    "auditLogging": "not-documented",
+    "credentialPersistence": "not-documented",
+    "inputValidation": "not-documented",
+    "outputValidation": "not-documented",
+    "rateLimiting": "not-documented",
+    "healthMonitoring": "not-documented"
+  },
+  "provenance": {
+    "sourceMetadata": {
+      "kind": "readme",
+      "location": "README.md"
+    },
+    "lastVerifiedCommit": "6de22fecda08597f53894c1053a0773fcfa1c5b0",
+    "reviewStatus": "blocked",
+    "notes": [
+      "The repository contains only a title-only README and has no server.json, implementation, authorized provider, package metadata, license file, distribution, transport, or hosted endpoint.",
+      "No OfferUp capability is claimed until an authorized provider is implemented and reviewed."
+    ]
+  }
+}
