@@ -1,0 +1,342 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/ashergarland/agent-tool-server-registry/main/schema/server-entry.schema.json",
+  "title": "Curated agent tool server entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "name",
+    "description",
+    "lifecycle",
+    "repository",
+    "license",
+    "maintainer",
+    "categories",
+    "tags",
+    "interfaces",
+    "capabilities",
+    "operations",
+    "provenance"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": {
+      "type": "string",
+      "pattern": "^agent-tool-server-[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "description": { "type": "string", "minLength": 1, "maxLength": 300 },
+    "version": { "$ref": "#/$defs/semver" },
+    "lifecycle": {
+      "enum": ["planned", "development", "active", "deprecated", "archived"]
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^https://github\\.com/ashergarland/agent-tool-server-[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "license": { "type": "string", "minLength": 1 },
+    "maintainer": {
+      "type": "string",
+      "pattern": "^@[A-Za-z0-9](?:[A-Za-z0-9-]{0,37})$"
+    },
+    "categories": { "$ref": "#/$defs/uniqueStrings" },
+    "tags": { "$ref": "#/$defs/uniqueStrings" },
+    "distribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "npm": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["package", "version", "url"],
+          "properties": {
+            "package": { "type": "string", "minLength": 1 },
+            "version": { "$ref": "#/$defs/semver" },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https://www\\.npmjs\\.com/package/"
+            }
+          }
+        },
+        "container": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["image", "immutableReference", "url"],
+          "properties": {
+            "image": { "type": "string", "minLength": 1 },
+            "immutableReference": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            },
+            "url": { "type": "string", "format": "uri" }
+          }
+        },
+        "officialMcpRegistry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["identifier", "url"],
+          "properties": {
+            "identifier": { "type": "string", "minLength": 1 },
+            "url": { "type": "string", "format": "uri" }
+          }
+        },
+        "dockerMcpCatalog": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["identifier", "url"],
+          "properties": {
+            "identifier": { "type": "string", "minLength": 1 },
+            "url": { "type": "string", "format": "uri" }
+          }
+        }
+      }
+    },
+    "interfaces": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transports",
+        "hosting",
+        "authentication",
+        "requiredConfiguration"
+      ],
+      "properties": {
+        "transports": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "enum": ["stdio", "streamable-http", "openapi-http"] }
+        },
+        "hosting": {
+          "enum": ["self-hosted", "hosted", "planned", "unavailable"]
+        },
+        "endpoints": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "remoteMcpUrlTemplate": { "$ref": "#/$defs/urlTemplate" },
+            "openApiUrlTemplate": { "$ref": "#/$defs/urlTemplate" },
+            "healthUrlTemplate": { "$ref": "#/$defs/urlTemplate" }
+          }
+        },
+        "authentication": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "api-key",
+              "bearer-token",
+              "entra-jwt",
+              "managed-identity",
+              "oauth2",
+              "none"
+            ]
+          }
+        },
+        "requiredConfiguration": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "required", "secret", "description"],
+            "properties": {
+              "name": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+              "required": { "type": "boolean" },
+              "secret": { "type": "boolean" },
+              "description": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "hosting": { "const": "hosted" } },
+            "required": ["hosting"]
+          },
+          "then": {
+            "type": "object",
+            "required": ["endpoints"],
+            "properties": {
+              "endpoints": {
+                "type": "object",
+                "required": ["healthUrlTemplate"]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tools"],
+      "properties": {
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "summary",
+              "safety",
+              "behavior",
+              "consequential",
+              "availability"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]*$"
+              },
+              "summary": { "type": "string", "minLength": 1, "maxLength": 200 },
+              "safety": { "enum": ["low", "moderate", "high"] },
+              "behavior": { "enum": ["read-only", "mutation"] },
+              "consequential": { "type": "boolean" },
+              "availability": {
+                "enum": ["available", "planned", "blocked", "unavailable"]
+              },
+              "notes": { "type": "string", "minLength": 1 }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": { "behavior": { "const": "mutation" } },
+                  "required": ["behavior"]
+                },
+                "then": {
+                  "properties": { "consequential": { "const": true } }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "availability": {
+                      "enum": ["planned", "blocked", "unavailable"]
+                    }
+                  },
+                  "required": ["availability"]
+                },
+                "then": { "type": "object", "required": ["notes"] }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "operations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "leastPrivilege",
+        "scopeAllowLists",
+        "mutationsDisabledByDefault",
+        "explicitMutationConfirmation",
+        "dryRun",
+        "auditLogging",
+        "credentialPersistence",
+        "inputValidation",
+        "outputValidation",
+        "rateLimiting",
+        "healthMonitoring"
+      ],
+      "properties": {
+        "leastPrivilege": { "$ref": "#/$defs/claim" },
+        "scopeAllowLists": { "$ref": "#/$defs/claim" },
+        "mutationsDisabledByDefault": { "$ref": "#/$defs/claim" },
+        "explicitMutationConfirmation": { "$ref": "#/$defs/claim" },
+        "dryRun": { "$ref": "#/$defs/claim" },
+        "auditLogging": { "$ref": "#/$defs/claim" },
+        "credentialPersistence": {
+          "enum": ["none", "memory-only", "external-store", "not-documented"]
+        },
+        "inputValidation": { "$ref": "#/$defs/claim" },
+        "outputValidation": { "$ref": "#/$defs/claim" },
+        "rateLimiting": { "$ref": "#/$defs/claim" },
+        "healthMonitoring": { "$ref": "#/$defs/claim" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceMetadata", "reviewStatus"],
+      "properties": {
+        "sourceMetadata": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "location"],
+          "properties": {
+            "kind": { "enum": ["server-json", "readme", "repository"] },
+            "location": {
+              "type": "string",
+              "minLength": 1,
+              "not": {
+                "pattern": "(?:[Tt][Oo][Kk][Ee][Nn]|[Ss][Ee][Cc][Rr][Ee][Tt]|[Pp][Aa][Ss][Ss][Ww][Oo][Rr][Dd])="
+              }
+            }
+          }
+        },
+        "lastVerifiedCommit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "reviewStatus": {
+          "enum": ["pending", "reviewed", "mismatch", "blocked"]
+        },
+        "notes": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "deprecation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason"],
+      "properties": {
+        "reason": { "type": "string", "minLength": 1 },
+        "replacement": {
+          "type": "string",
+          "pattern": "^agent-tool-server-[a-z0-9]+(?:-[a-z0-9]+)*$"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "lifecycle": { "const": "deprecated" } },
+        "required": ["lifecycle"]
+      },
+      "then": { "type": "object", "required": ["deprecation"] },
+      "else": {
+        "type": "object",
+        "not": { "type": "object", "required": ["deprecation"] }
+      }
+    }
+  ],
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "uniqueStrings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "urlTemplate": {
+      "type": "string",
+      "pattern": "^https://(?:[A-Za-z0-9.-]+|\\{[A-Za-z][A-Za-z0-9_]*\\})(?::[0-9]+)?(?:/[^\\s]*)?$"
+    },
+    "claim": {
+      "enum": [true, false, "not-documented"]
+    }
+  }
+}
