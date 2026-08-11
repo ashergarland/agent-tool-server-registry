@@ -10,7 +10,6 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "catalog:check": "tsx src/cli.ts catalog-check",
-    "catalog:format": "tsx src/cli.ts generate",
     "catalog:generate": "tsx src/cli.ts generate",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

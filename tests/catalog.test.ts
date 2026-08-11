@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
@@ -28,7 +28,6 @@ async function fixtureRoot(): Promise<string> {
 }
 
 afterEach(async () => {
-  const { rm } = await import("node:fs/promises");
   await Promise.all(
     temporaryRoots.splice(0).map((root) => rm(root, { recursive: true })),
   );
