@@ -98,7 +98,12 @@
     "interfaces": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["transports", "hosting", "authentication", "requiredConfiguration"],
+      "required": [
+        "transports",
+        "hosting",
+        "authentication",
+        "requiredConfiguration"
+      ],
       "properties": {
         "transports": {
           "type": "array",
@@ -154,9 +159,11 @@
             "required": ["hosting"]
           },
           "then": {
+            "type": "object",
             "required": ["endpoints"],
             "properties": {
               "endpoints": {
+                "type": "object",
                 "required": ["healthUrlTemplate"]
               }
             }
@@ -209,11 +216,13 @@
               {
                 "if": {
                   "properties": {
-                    "availability": { "enum": ["planned", "blocked", "unavailable"] }
+                    "availability": {
+                      "enum": ["planned", "blocked", "unavailable"]
+                    }
                   },
                   "required": ["availability"]
                 },
-                "then": { "required": ["notes"] }
+                "then": { "type": "object", "required": ["notes"] }
               }
             ]
           }
@@ -305,8 +314,11 @@
         "properties": { "lifecycle": { "const": "deprecated" } },
         "required": ["lifecycle"]
       },
-      "then": { "required": ["deprecation"] },
-      "else": { "not": { "required": ["deprecation"] } }
+      "then": { "type": "object", "required": ["deprecation"] },
+      "else": {
+        "type": "object",
+        "not": { "type": "object", "required": ["deprecation"] }
+      }
     }
   ],
   "$defs": {

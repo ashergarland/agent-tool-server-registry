@@ -18,7 +18,9 @@ async function fixtureRoot(): Promise<string> {
   temporaryRoots.push(root);
   await mkdir(root, { recursive: true });
   await Promise.all([
-    cp(join(projectRoot, "entries"), join(root, "entries"), { recursive: true }),
+    cp(join(projectRoot, "entries"), join(root, "entries"), {
+      recursive: true,
+    }),
     cp(join(projectRoot, "schema"), join(root, "schema"), { recursive: true }),
     cp(join(projectRoot, "package.json"), join(root, "package.json")),
   ]);
@@ -27,7 +29,9 @@ async function fixtureRoot(): Promise<string> {
 
 afterEach(async () => {
   const { rm } = await import("node:fs/promises");
-  await Promise.all(temporaryRoots.splice(0).map((root) => rm(root, { recursive: true })));
+  await Promise.all(
+    temporaryRoots.splice(0).map((root) => rm(root, { recursive: true })),
+  );
 });
 
 describe("catalog generation", () => {
@@ -36,7 +40,11 @@ describe("catalog generation", () => {
     const second = serializeCatalog(await generateCatalog(projectRoot));
     expect(second).toBe(first);
     const catalog = JSON.parse(first) as {
-      entries: Array<{ id: string; tags: string[]; capabilities: { tools: { name: string }[] } }>;
+      entries: Array<{
+        id: string;
+        tags: string[];
+        capabilities: { tools: { name: string }[] };
+      }>;
     };
     expect(catalog.entries.map((entry) => entry.id)).toEqual(
       [...catalog.entries.map((entry) => entry.id)].sort(),

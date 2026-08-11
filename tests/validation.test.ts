@@ -14,7 +14,10 @@ import {
 
 async function azureEntry(): Promise<ServerEntry> {
   return JSON.parse(
-    await readFile(join(projectRoot, "entries/agent-tool-server-azure.json"), "utf8"),
+    await readFile(
+      join(projectRoot, "entries/agent-tool-server-azure.json"),
+      "utf8",
+    ),
   ) as ServerEntry;
 }
 
@@ -58,11 +61,17 @@ describe("entry schema and consistency", () => {
   });
 
   it("rejects invalid names and semantic versions", async () => {
-    const entry = { ...(await azureEntry()), id: "azure", version: "version-one" };
+    const entry = {
+      ...(await azureEntry()),
+      id: "azure",
+      version: "version-one",
+    };
     expect(await validateEntryDocument(projectRoot, entry)).not.toEqual([]);
     expect(validateConsistency(loaded(entry, "azure.json"))).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ message: "invalid semantic version: version-one" }),
+        expect.objectContaining({
+          message: "invalid semantic version: version-one",
+        }),
       ]),
     );
   });
@@ -83,15 +92,23 @@ describe("entry schema and consistency", () => {
 
   it("detects duplicate tool names", async () => {
     const entry = await azureEntry();
-    entry.capabilities.tools.push(structuredClone(entry.capabilities.tools[0]!));
-    expect(validateConsistency(loaded(entry))[0]?.message).toContain("duplicate tool name");
+    entry.capabilities.tools.push(
+      structuredClone(entry.capabilities.tools[0]!),
+    );
+    expect(validateConsistency(loaded(entry))[0]?.message).toContain(
+      "duplicate tool name",
+    );
   });
 
   it("requires safety controls for mutation tools", async () => {
     const entry = await azureEntry();
     entry.operations.explicitMutationConfirmation = false;
-    expect(validateConsistency(loaded(entry)).map((issue) => issue.message)).toEqual(
-      expect.arrayContaining([expect.stringContaining("requires consequential=true")]),
+    expect(
+      validateConsistency(loaded(entry)).map((issue) => issue.message),
+    ).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("requires consequential=true"),
+      ]),
     );
   });
 
@@ -104,8 +121,12 @@ describe("entry schema and consistency", () => {
 
   it("honestly represents unpublished and unhosted servers", async () => {
     const entries = (await loadEntries(projectRoot)).map(({ entry }) => entry);
-    expect(entries.every((entry) => entry.distribution === undefined)).toBe(true);
-    const offerUp = entries.find((entry) => entry.id === "agent-tool-server-offerup");
+    expect(entries.every((entry) => entry.distribution === undefined)).toBe(
+      true,
+    );
+    const offerUp = entries.find(
+      (entry) => entry.id === "agent-tool-server-offerup",
+    );
     expect(offerUp?.interfaces.hosting).toBe("unavailable");
     expect(offerUp?.interfaces.transports).toEqual([]);
     expect(offerUp?.capabilities.tools).toEqual([]);

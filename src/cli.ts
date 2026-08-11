@@ -40,7 +40,9 @@ async function main(): Promise<void> {
     process.exitCode = results.some((result) => result.status !== "ok") ? 1 : 0;
     return;
   }
-  console.error("usage: cli.ts <generate|catalog-check|validate|verify-online>");
+  console.error(
+    "usage: cli.ts <generate|catalog-check|validate|verify-online>",
+  );
   process.exitCode = 2;
 }
 

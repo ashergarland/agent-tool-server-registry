@@ -1,8 +1,13 @@
 import { readFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { join } from "node:path";
 
-import Ajv2020, { type ErrorObject, type ValidateFunction } from "ajv/dist/2020.js";
-import addFormats from "ajv-formats";
+import {
+  Ajv2020,
+  type ErrorObject,
+  type ValidateFunction,
+} from "ajv/dist/2020.js";
+import type { FormatsPlugin } from "ajv-formats";
 import semver from "semver";
 
 import { checkCatalog, generateCatalog, loadEntries } from "./catalog.js";
@@ -13,9 +18,15 @@ interface Validators {
   catalog: ValidateFunction<Catalog>;
 }
 
+const require = createRequire(import.meta.url);
+const addFormats = require("ajv-formats") as FormatsPlugin;
+
 function formatErrors(errors: ErrorObject[] | null | undefined): string {
   return (errors ?? [])
-    .map((error) => `${error.instancePath || "/"} ${error.message ?? "is invalid"}`)
+    .map(
+      (error) =>
+        `${error.instancePath || "/"} ${error.message ?? "is invalid"}`,
+    )
     .join("; ");
 }
 
@@ -26,7 +37,11 @@ async function createValidators(root: string): Promise<Validators> {
   const catalogSchema = JSON.parse(
     await readFile(join(root, "schema/catalog.schema.json"), "utf8"),
   ) as object;
-  const ajv = new Ajv2020({ allErrors: true, strict: true });
+  const ajv = new Ajv2020({
+    allErrors: true,
+    strict: true,
+    strictRequired: false,
+  });
   addFormats(ajv);
   ajv.addSchema(entrySchema);
 
@@ -50,7 +65,9 @@ export async function validateEntryDocument(
 
 function duplicates(values: string[]): string[] {
   const seen = new Set<string>();
-  return [...new Set(values.filter((value) => seen.size === seen.add(value).size))];
+  return [
+    ...new Set(values.filter((value) => seen.size === seen.add(value).size)),
+  ];
 }
 
 export function validateConsistency(
@@ -64,7 +81,10 @@ export function validateConsistency(
     issues.push({ source: "entries", message: `duplicate server ID: ${id}` });
   }
   for (const repository of duplicates(repositories)) {
-    issues.push({ source: "entries", message: `duplicate repository URL: ${repository}` });
+    issues.push({
+      source: "entries",
+      message: `duplicate repository URL: ${repository}`,
+    });
   }
 
   for (const { filename, entry } of loaded) {
@@ -75,10 +95,18 @@ export function validateConsistency(
       });
     }
     if (entry.version !== undefined && semver.valid(entry.version) === null) {
-      issues.push({ source: filename, message: `invalid semantic version: ${entry.version}` });
+      issues.push({
+        source: filename,
+        message: `invalid semantic version: ${entry.version}`,
+      });
     }
-    for (const name of duplicates(entry.capabilities.tools.map((tool) => tool.name))) {
-      issues.push({ source: filename, message: `duplicate tool name: ${name}` });
+    for (const name of duplicates(
+      entry.capabilities.tools.map((tool) => tool.name),
+    )) {
+      issues.push({
+        source: filename,
+        message: `duplicate tool name: ${name}`,
+      });
     }
     for (const name of duplicates(entry.tags)) {
       issues.push({ source: filename, message: `duplicate tag: ${name}` });
@@ -102,7 +130,10 @@ export function validateConsistency(
         });
       }
     }
-    if (entry.interfaces.hosting === "hosted" && entry.interfaces.endpoints === undefined) {
+    if (
+      entry.interfaces.hosting === "hosted" &&
+      entry.interfaces.endpoints === undefined
+    ) {
       issues.push({
         source: filename,
         message: "hosted entries must declare stable endpoints",
@@ -138,13 +169,19 @@ export async function validateRegistry(
 
   for (const { filename, entry } of loaded) {
     if (!validators.entry(entry)) {
-      issues.push({ source: filename, message: formatErrors(validators.entry.errors) });
+      issues.push({
+        source: filename,
+        message: formatErrors(validators.entry.errors),
+      });
     }
   }
 
   const catalog = await generateCatalog(root);
   if (!validators.catalog(catalog)) {
-    issues.push({ source: "catalog.json", message: formatErrors(validators.catalog.errors) });
+    issues.push({
+      source: "catalog.json",
+      message: formatErrors(validators.catalog.errors),
+    });
   }
 
   if (includeCatalogCheck) {

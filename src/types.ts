@@ -52,7 +52,8 @@ export interface ServerEntry {
     explicitMutationConfirmation: boolean | "not-documented";
     dryRun: boolean | "not-documented";
     auditLogging: boolean | "not-documented";
-    credentialPersistence: "none" | "memory-only" | "external-store" | "not-documented";
+    credentialPersistence:
+      "none" | "memory-only" | "external-store" | "not-documented";
     inputValidation: boolean | "not-documented";
     outputValidation: boolean | "not-documented";
     rateLimiting: boolean | "not-documented";

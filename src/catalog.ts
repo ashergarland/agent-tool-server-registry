@@ -22,7 +22,9 @@ export async function loadEntries(root: string): Promise<LoadedEntry[]> {
   return Promise.all(
     filenames.map(async (filename) => ({
       filename,
-      entry: JSON.parse(await readFile(join(directory, filename), "utf8")) as ServerEntry,
+      entry: JSON.parse(
+        await readFile(join(directory, filename), "utf8"),
+      ) as ServerEntry,
     })),
   );
 }
@@ -72,7 +74,10 @@ export function serializeCatalog(catalog: Catalog): string {
 }
 
 export async function writeCatalog(root: string): Promise<void> {
-  await writeFile(join(root, "catalog.json"), serializeCatalog(await generateCatalog(root)));
+  await writeFile(
+    join(root, "catalog.json"),
+    serializeCatalog(await generateCatalog(root)),
+  );
 }
 
 export async function checkCatalog(root: string): Promise<ValidationIssue[]> {
@@ -83,7 +88,9 @@ export async function checkCatalog(root: string): Promise<ValidationIssue[]> {
   try {
     actual = await readFile(path, "utf8");
   } catch {
-    return [{ source: "catalog.json", message: "generated catalog is missing" }];
+    return [
+      { source: "catalog.json", message: "generated catalog is missing" },
+    ];
   }
 
   return actual === expected

@@ -6,13 +6,12 @@ export default tseslint.config(
     ignores: ["dist/", "catalog.json"],
   },
   eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.recommended,
   {
     files: ["**/*.ts"],
     languageOptions: {
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: import.meta.dirname,
       },
     },
     rules: {

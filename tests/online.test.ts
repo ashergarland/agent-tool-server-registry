@@ -9,7 +9,10 @@ import type { ServerEntry } from "../src/types.js";
 
 async function entry(): Promise<ServerEntry> {
   return JSON.parse(
-    await readFile(join(projectRoot, "entries/agent-tool-server-azure.json"), "utf8"),
+    await readFile(
+      join(projectRoot, "entries/agent-tool-server-azure.json"),
+      "utf8",
+    ),
   ) as ServerEntry;
 }
 
@@ -20,7 +23,7 @@ describe("cross-repository comparison", () => {
       compareMetadata(source, {
         name: `io.github.ashergarland/${source.id}`,
         repository: { url: source.repository },
-        version: source.version,
+        version: source.version!,
         packages: [{ transport: { type: "stdio" } }],
       }),
     ).toEqual([]);

@@ -17,7 +17,12 @@
       "openApiUrlTemplate": "https://{host}/openapi.json",
       "healthUrlTemplate": "https://{host}/health"
     },
-    "authentication": ["api-key", "bearer-token", "entra-jwt", "managed-identity"],
+    "authentication": [
+      "api-key",
+      "bearer-token",
+      "entra-jwt",
+      "managed-identity"
+    ],
     "requiredConfiguration": [
       {
         "name": "API_KEYS",
