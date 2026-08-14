@@ -1,4 +1,2 @@
-dist/
 node_modules/
-catalog.json
 package-lock.json

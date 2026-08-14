@@ -1,387 +1,98 @@
 {
-  "schemaVersion": "1.0.0",
-  "catalogVersion": "0.1.0",
-  "entries": [
+  "$schema": "./schema/catalog.schema.json",
+  "schemaVersion": 1,
+  "servers": [
     {
-      "schemaVersion": "1.0.0",
+      "id": "agent-tool-server-ast-summarizer",
+      "name": "AST Summarizer Agent Tool Server",
+      "summary": "Extracts structural code skeletons and static import dependency graphs from TypeScript and JavaScript sources.",
+      "repository": "https://github.com/ashergarland/agent-tool-server-ast-summarizer",
+      "lifecycle": "development",
+      "categories": ["code-analysis", "developer-tools", "static-analysis"]
+    },
+    {
       "id": "agent-tool-server-azure",
       "name": "Azure Agent Tool Server",
-      "description": "A constrained server for inspecting, diagnosing, and operating Azure resources.",
-      "version": "0.1.0",
-      "lifecycle": "development",
+      "summary": "Provides constrained tools for inspecting, diagnosing, and operating Azure cloud resources.",
       "repository": "https://github.com/ashergarland/agent-tool-server-azure",
-      "license": "MIT",
-      "maintainer": "@ashergarland",
-      "categories": [
-        "cloud-operations",
-        "developer-tools"
-      ],
-      "tags": [
-        "azure",
-        "diagnostics",
-        "infrastructure"
-      ],
-      "interfaces": {
-        "transports": [
-          "openapi-http",
-          "stdio"
-        ],
-        "hosting": "self-hosted",
-        "endpoints": {
-          "openApiUrlTemplate": "https://{host}/openapi.json",
-          "healthUrlTemplate": "https://{host}/health"
-        },
-        "authentication": [
-          "api-key",
-          "bearer-token",
-          "entra-jwt",
-          "managed-identity"
-        ],
-        "requiredConfiguration": [
-          {
-            "name": "API_KEYS",
-            "required": true,
-            "secret": true,
-            "description": "Inbound API keys when API-key authentication is selected."
-          },
-          {
-            "name": "AUTH_MODE",
-            "required": true,
-            "secret": false,
-            "description": "Selects API-key, Entra JWT, or local disabled authentication."
-          },
-          {
-            "name": "AZURE_ALLOWED_RESOURCE_GROUPS",
-            "required": false,
-            "secret": false,
-            "description": "Optional resource-group scope allow-list."
-          },
-          {
-            "name": "AZURE_SUBSCRIPTION_IDS",
-            "required": false,
-            "secret": false,
-            "description": "Optional subscription scope allow-list."
-          },
-          {
-            "name": "ENTRA_AUDIENCE",
-            "required": false,
-            "secret": false,
-            "description": "Required audience when Entra JWT authentication is selected."
-          },
-          {
-            "name": "ENTRA_TENANT_ID",
-            "required": false,
-            "secret": false,
-            "description": "Required tenant identifier when Entra JWT authentication is selected."
-          }
-        ]
-      },
-      "capabilities": {
-        "tools": [
-          {
-            "name": "azure_get_activity_log",
-            "summary": "Retrieve recent control-plane activity.",
-            "safety": "moderate",
-            "behavior": "read-only",
-            "consequential": false,
-            "availability": "available"
-          },
-          {
-            "name": "azure_get_resource",
-            "summary": "Retrieve one Azure resource and its properties.",
-            "safety": "moderate",
-            "behavior": "read-only",
-            "consequential": false,
-            "availability": "available"
-          },
-          {
-            "name": "azure_get_resource_metrics",
-            "summary": "Retrieve Azure Monitor metric time series.",
-            "safety": "low",
-            "behavior": "read-only",
-            "consequential": false,
-            "availability": "available"
-          },
-          {
-            "name": "azure_list_resource_groups",
-            "summary": "List resource groups in an allowed subscription.",
-            "safety": "low",
-            "behavior": "read-only",
-            "consequential": false,
-            "availability": "available"
-          },
-          {
-            "name": "azure_list_subscriptions",
-            "summary": "List subscriptions visible to the server.",
-            "safety": "low",
-            "behavior": "read-only",
-            "consequential": false,
-            "availability": "available"
-          },
-          {
-            "name": "azure_list_unhealthy_resources",
-            "summary": "List resources reported as unhealthy.",
-            "safety": "low",
-            "behavior": "read-only",
-            "consequential": false,
-            "availability": "available"
-          },
-          {
-            "name": "azure_restart_virtual_machine",
-            "summary": "Restart an allowed virtual machine.",
-            "safety": "high",
-            "behavior": "mutation",
-            "consequential": true,
-            "availability": "available"
-          },
-          {
-            "name": "azure_restart_web_app",
-            "summary": "Restart an allowed App Service or Function App.",
-            "safety": "high",
-            "behavior": "mutation",
-            "consequential": true,
-            "availability": "available"
-          },
-          {
-            "name": "azure_run_graph_query",
-            "summary": "Run a read-only Azure Resource Graph query.",
-            "safety": "moderate",
-            "behavior": "read-only",
-            "consequential": false,
-            "availability": "available"
-          },
-          {
-            "name": "azure_search_resources",
-            "summary": "Search resources with structured filters.",
-            "safety": "low",
-            "behavior": "read-only",
-            "consequential": false,
-            "availability": "available"
-          },
-          {
-            "name": "azure_start_virtual_machine",
-            "summary": "Start an allowed stopped virtual machine.",
-            "safety": "high",
-            "behavior": "mutation",
-            "consequential": true,
-            "availability": "available"
-          },
-          {
-            "name": "azure_tag_resource",
-            "summary": "Merge tags onto an allowed resource.",
-            "safety": "moderate",
-            "behavior": "mutation",
-            "consequential": true,
-            "availability": "available"
-          }
-        ]
-      },
-      "operations": {
-        "leastPrivilege": true,
-        "scopeAllowLists": true,
-        "mutationsDisabledByDefault": true,
-        "explicitMutationConfirmation": true,
-        "dryRun": true,
-        "auditLogging": true,
-        "credentialPersistence": "none",
-        "inputValidation": true,
-        "outputValidation": true,
-        "rateLimiting": true,
-        "healthMonitoring": true
-      },
-      "provenance": {
-        "sourceMetadata": {
-          "kind": "readme",
-          "location": "README.md"
-        },
-        "lastVerifiedCommit": "2ff1cea5e563ccc9175b9f726df22f38baed05e3",
-        "reviewStatus": "mismatch",
-        "notes": [
-          "The source repository does not yet contain the required server.json.",
-          "No published package, immutable container release, official MCP registration, Docker catalog registration, or stable hosted endpoint was verified."
-        ]
-      }
+      "lifecycle": "development",
+      "categories": ["cloud-operations", "developer-tools", "infrastructure"]
     },
     {
-      "schemaVersion": "1.0.0",
+      "id": "agent-tool-server-data-cruncher",
+      "name": "Data Cruncher Agent Tool Server",
+      "summary": "Runs jq filters and ripgrep searches over local files so large payloads stay out of the agent context window.",
+      "repository": "https://github.com/ashergarland/agent-tool-server-data-cruncher",
+      "lifecycle": "development",
+      "categories": ["data-processing", "developer-tools", "search"]
+    },
+    {
+      "id": "agent-tool-server-doc-rag",
+      "name": "Doc RAG Agent Tool Server",
+      "summary": "Searches a local documentation index and returns bounded, scored passages for retrieval-augmented workflows.",
+      "repository": "https://github.com/ashergarland/agent-tool-server-doc-rag",
+      "lifecycle": "development",
+      "categories": [
+        "documentation",
+        "retrieval-augmented-generation",
+        "search"
+      ]
+    },
+    {
       "id": "agent-tool-server-ebay",
       "name": "eBay Agent Tool Server",
-      "description": "A read-only server for retrieving, searching, and comparing eBay Browse API listings.",
-      "version": "0.1.0",
-      "lifecycle": "development",
+      "summary": "Wraps eBay marketplace APIs to provide listing search and item lookup tools.",
       "repository": "https://github.com/ashergarland/agent-tool-server-ebay",
-      "license": "MIT",
-      "maintainer": "@ashergarland",
-      "categories": [
-        "commerce",
-        "marketplaces"
-      ],
-      "tags": [
-        "ebay",
-        "listings",
-        "search"
-      ],
-      "interfaces": {
-        "transports": [
-          "openapi-http",
-          "stdio"
-        ],
-        "hosting": "self-hosted",
-        "endpoints": {
-          "openApiUrlTemplate": "https://{host}/openapi.json",
-          "healthUrlTemplate": "https://{host}/health"
-        },
-        "authentication": [
-          "api-key",
-          "bearer-token",
-          "oauth2"
-        ],
-        "requiredConfiguration": [
-          {
-            "name": "API_KEYS",
-            "required": true,
-            "secret": true,
-            "description": "Inbound API keys when API-key authentication is selected."
-          },
-          {
-            "name": "AUTH_MODE",
-            "required": true,
-            "secret": false,
-            "description": "Selects API-key or local disabled authentication."
-          },
-          {
-            "name": "EBAY_CLIENT_ID",
-            "required": true,
-            "secret": true,
-            "description": "eBay application client identifier."
-          },
-          {
-            "name": "EBAY_CLIENT_SECRET",
-            "required": true,
-            "secret": true,
-            "description": "eBay application client secret."
-          },
-          {
-            "name": "EBAY_ENVIRONMENT",
-            "required": true,
-            "secret": false,
-            "description": "Selects the eBay production or sandbox environment."
-          }
-        ]
-      },
-      "capabilities": {
-        "tools": [
-          {
-            "name": "ebay_compare_listings",
-            "summary": "Compare active listings without making a recommendation.",
-            "safety": "low",
-            "behavior": "read-only",
-            "consequential": false,
-            "availability": "available"
-          },
-          {
-            "name": "ebay_find_similar_listings",
-            "summary": "Find active comparable listings using documented identifiers and keywords.",
-            "safety": "low",
-            "behavior": "read-only",
-            "consequential": false,
-            "availability": "available"
-          },
-          {
-            "name": "ebay_get_listing",
-            "summary": "Retrieve structured listing data from an eBay URL or item ID.",
-            "safety": "low",
-            "behavior": "read-only",
-            "consequential": false,
-            "availability": "available"
-          },
-          {
-            "name": "ebay_search_listings",
-            "summary": "Search active eBay listings with bounded filters.",
-            "safety": "low",
-            "behavior": "read-only",
-            "consequential": false,
-            "availability": "available"
-          }
-        ]
-      },
-      "operations": {
-        "leastPrivilege": "not-documented",
-        "scopeAllowLists": "not-documented",
-        "mutationsDisabledByDefault": true,
-        "explicitMutationConfirmation": "not-documented",
-        "dryRun": "not-documented",
-        "auditLogging": "not-documented",
-        "credentialPersistence": "memory-only",
-        "inputValidation": true,
-        "outputValidation": true,
-        "rateLimiting": true,
-        "healthMonitoring": true
-      },
-      "provenance": {
-        "sourceMetadata": {
-          "kind": "readme",
-          "location": "README.md"
-        },
-        "lastVerifiedCommit": "4ae9f531a15ef8de1c2763104f912214bfb8711d",
-        "reviewStatus": "mismatch",
-        "notes": [
-          "The source repository does not yet contain the required server.json.",
-          "The source package name, repository URL, README title, CI badge, service name, and security link still use the former chatgpt-ebay name.",
-          "No published package, immutable container release, official MCP registration, Docker catalog registration, or stable hosted endpoint was verified."
-        ]
-      }
+      "lifecycle": "development",
+      "categories": ["e-commerce", "marketplace", "shopping"]
     },
     {
-      "schemaVersion": "1.0.0",
+      "id": "agent-tool-server-game-prices",
+      "name": "Game Prices Agent Tool Server",
+      "summary": "Retrieves video game pricing and deal information from third-party price aggregation APIs.",
+      "repository": "https://github.com/ashergarland/agent-tool-server-game-prices",
+      "lifecycle": "development",
+      "categories": ["e-commerce", "gaming", "price-tracking"]
+    },
+    {
+      "id": "agent-tool-server-git-optimizer",
+      "name": "Git Optimizer Agent Tool Server",
+      "summary": "Summarizes local Git commit diffs into filtered per-file changelogs that omit lockfiles and generated assets.",
+      "repository": "https://github.com/ashergarland/agent-tool-server-git-optimizer",
+      "lifecycle": "development",
+      "categories": ["code-analysis", "developer-tools", "version-control"]
+    },
+    {
+      "id": "agent-tool-server-music-marketplace",
+      "name": "Music Marketplace Agent Tool Server",
+      "summary": "Provides search and listing lookup tools for music gear and instrument marketplaces.",
+      "repository": "https://github.com/ashergarland/agent-tool-server-music-marketplace",
+      "lifecycle": "development",
+      "categories": ["e-commerce", "marketplace", "music"]
+    },
+    {
       "id": "agent-tool-server-offerup",
       "name": "OfferUp Agent Tool Server",
-      "description": "A reserved registry entry for a repository that does not yet contain a server implementation.",
-      "lifecycle": "planned",
+      "summary": "Placeholder for OfferUp marketplace tooling; currently reports that no authorized provider integration is available.",
       "repository": "https://github.com/ashergarland/agent-tool-server-offerup",
-      "license": "UNLICENSED",
-      "maintainer": "@ashergarland",
-      "categories": [
-        "marketplaces"
-      ],
-      "tags": [
-        "offerup",
-        "planned"
-      ],
-      "interfaces": {
-        "transports": [],
-        "hosting": "unavailable",
-        "authentication": [],
-        "requiredConfiguration": []
-      },
-      "capabilities": {
-        "tools": []
-      },
-      "operations": {
-        "leastPrivilege": "not-documented",
-        "scopeAllowLists": "not-documented",
-        "mutationsDisabledByDefault": "not-documented",
-        "explicitMutationConfirmation": "not-documented",
-        "dryRun": "not-documented",
-        "auditLogging": "not-documented",
-        "credentialPersistence": "not-documented",
-        "inputValidation": "not-documented",
-        "outputValidation": "not-documented",
-        "rateLimiting": "not-documented",
-        "healthMonitoring": "not-documented"
-      },
-      "provenance": {
-        "sourceMetadata": {
-          "kind": "readme",
-          "location": "README.md"
-        },
-        "lastVerifiedCommit": "6de22fecda08597f53894c1053a0773fcfa1c5b0",
-        "reviewStatus": "blocked",
-        "notes": [
-          "The repository contains only a title-only README and has no server.json, implementation, authorized provider, package metadata, license file, distribution, transport, or hosted endpoint.",
-          "No OfferUp capability is claimed until an authorized provider is implemented and reviewed."
-        ]
-      }
+      "lifecycle": "scaffold",
+      "categories": ["e-commerce", "marketplace", "shopping"]
+    },
+    {
+      "id": "agent-tool-server-shopping",
+      "name": "Shopping Agent Tool Server",
+      "summary": "Provides general retail product search and lookup tools across shopping data sources.",
+      "repository": "https://github.com/ashergarland/agent-tool-server-shopping",
+      "lifecycle": "development",
+      "categories": ["e-commerce", "retail", "shopping"]
+    },
+    {
+      "id": "agent-tool-server-vision",
+      "name": "Vision Agent Tool Server",
+      "summary": "Extracts text, layout, and bounding-box data from images with OCR, returning plain text, Markdown, or CSV.",
+      "repository": "https://github.com/ashergarland/agent-tool-server-vision",
+      "lifecycle": "development",
+      "categories": ["image-processing", "ocr", "vision"]
     }
   ]
 }
