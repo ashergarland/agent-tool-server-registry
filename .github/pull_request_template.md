@@ -1,20 +1,16 @@
-## Registry change
+## Catalog change
 
-Describe the registration or metadata update and cite its source evidence.
+Describe the catalog change and the repository evidence behind it.
 
-## Contributor checklist
+## Checklist
 
-- [ ] I own the server repository or am authorized to submit this change.
-- [ ] Repository and source `server.json` metadata are accurate.
-- [ ] Tool behavior, safety, consequence, and availability classifications are
-      accurate.
-- [ ] Authentication behavior and required configuration names are documented
-      without values.
-- [ ] Package, image, official MCP Registry, and Docker MCP catalog publication
-      claims are verified.
-- [ ] Hosted endpoint claims are stable, intentional, and currently available.
+- [ ] The change only adds broad discovery or lifecycle information; per-server
+      details stay in the server repository.
+- [ ] The server repository is an `ashergarland/agent-tool-server-*` repository.
+- [ ] `lifecycle` reflects the most conservative accurate status of the current
+      repository contents.
+- [ ] `summary` is factual, concise, and under 200 characters.
+- [ ] Servers are sorted by `id` and each entry's `categories` are sorted.
 - [ ] This change contains no credentials, deployment identifiers, or personal
       information.
 - [ ] `npm run verify` passes locally.
-- [ ] `npm run verify:online` passes, or mismatches are explicitly explained
-      above.
